@@ -27,8 +27,9 @@ def generate_password():
 
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
+
 def save():
-    website = website_entry.get()
+    website = website_entry.get().capitalize()
     email = user_entry.get()
     password = password_entry.get()
 
@@ -63,6 +64,31 @@ def save():
                 website_entry.delete(0, END)
                 password_entry.delete(0, END)
 
+# ---------------------------- SEARCH PASSWORD ------------------------------- #
+def find_password():
+    website = website_entry.get().capitalize()
+    email = user_entry.get()
+    password = password_entry.get()
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+
+    }
+    try:
+        with open("data.json", "r") as data_file:
+            # Reading old data and transforming in dictionary
+            data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.askokcancel(title="Error", message=f"No Details for {website_entry.get()} has been found")
+    else:
+        if website in data:
+            email = data[website]['email']
+            password = data[website]['password']
+            messagebox.askokcancel(title=website, message=f"Email: {email}\nPassword: {password}")
+        else:
+            messagebox.askokcancel(title=website_entry.get(), message=f"No Details for {website} has been found")
 # ---------------------------- UI SETUP ------------------------------- #
 
 window = Tk()
@@ -82,8 +108,8 @@ username_label.grid(column=0,row=2)
 password_label = Label(text="Password:")
 password_label.grid(column=0,row=3)
 
-website_entry = Entry(width=55)
-website_entry.grid(column=1,row=1,columnspan=2)
+website_entry = Entry(width=33)
+website_entry.grid(column=1,row=1)
 website_entry.focus()
 
 user_entry = Entry(width=55)
@@ -97,6 +123,9 @@ generate_password_button = Button(text="Generate Password", width=17, command=ge
 generate_password_button.grid(column=2,row=3)
 
 add_button = Button(text="Add", width=47, command=save)
-add_button.grid(column=1,row=4,columnspan=2,sticky="W")
+add_button.grid(column=1, row=4, columnspan=2, sticky="W")
+
+search_button = Button(text="Search", width=17, command=find_password)
+search_button.grid(column=2, row=1)
 
 window.mainloop()
